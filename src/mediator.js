@@ -127,7 +127,7 @@ function handleDropAnimation(callback) {
     callback();
   }
 
-  function animateGhostToPosition({ top, left }, duration, dropClass) {
+  function animateGhostToPosition({ top, left }, duration, dropClass, shouldAnimateDrop) {
     Utils.addClass(ghostInfo.ghost, 'animated');
     if (dropClass) {
       Utils.addClass(ghostInfo.ghost.firstElementChild, dropClass);
@@ -135,9 +135,13 @@ function handleDropAnimation(callback) {
     ghostInfo.ghost.style.transitionDuration = duration + 'ms';
     ghostInfo.ghost.style.left = left + 'px';
     ghostInfo.ghost.style.top = top + 'px';
-    setTimeout(function() {
+    if (shouldAnimateDrop) {
+      setTimeout(() => {
+        endDrop();
+      }, duration + 20);
+    } else {
       endDrop();
-    }, duration + 20);
+    }
   }
 
   function shouldAnimateDrop(options) {
@@ -153,7 +157,8 @@ function handleDropAnimation(callback) {
       animateGhostToPosition(
         dragResult.shadowBeginEnd.rect,
         Math.max(150, container.getOptions().animationDuration / 2),
-        container.getOptions().dropClass
+        container.getOptions().dropClass,
+        shouldAnimateDrop(container.getOptions())
       );
     } else {
       endDrop();
@@ -178,7 +183,8 @@ function handleDropAnimation(callback) {
       animateGhostToPosition(
         layout.getTopLeftOfElementBegin(prevDraggableEnd),
         container.getOptions().animationDuration,
-        container.getOptions().dropClass
+        container.getOptions().dropClass,
+        shouldAnimateDrop(container.getOptions())
       );
     } else {
       Utils.addClass(ghostInfo.ghost, 'animated');
